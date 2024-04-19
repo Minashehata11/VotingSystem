@@ -1,7 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace PL.VotingSystem.Controllers
 {
