@@ -11,7 +11,7 @@ namespace BLL.VotingSystem.Interfaces
     {
 
         public IEnumerable<T> GetAll();
-        public T GetById(int? Id);
+        public T GetById(string? Id); //test string 
 
         public   void Add(T entity);
 

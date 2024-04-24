@@ -34,7 +34,7 @@ namespace BLL.VotingSystem.Repository
         public IEnumerable<T> GetAll()
    => _context.Set<T>().ToList();
 
-        public T GetById(int? Id)
+        public T GetById(string? Id)  // test string
         {
             return _context.Set<T>().Find(Id);
         }
