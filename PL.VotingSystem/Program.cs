@@ -49,6 +49,7 @@ namespace PL.VotingSystem
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerDocumentation();
+            builder.Services.AddScoped<ICandidateRepository, CandidateRepository>(); // wiring interface with repo
 
 
             var app = builder.Build();
