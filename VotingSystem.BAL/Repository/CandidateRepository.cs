@@ -17,5 +17,10 @@ namespace BLL.VotingSystem.Repository
         {
             _context = context;
         }
+
+        public async Task<Candidate?> GetCandidateRecord(int id)
+        {
+            return await _context.Candidates.FindAsync(id);  // Find the Candidate by id 
+        }
     }
 }

@@ -9,5 +9,7 @@ namespace BLL.VotingSystem.Interfaces
 {
     public interface ICandidateRepository:IGenericRepository<Candidate>
     {
+        Task<Candidate?> GetCandidateRecord(int id);
+
     }
 }
