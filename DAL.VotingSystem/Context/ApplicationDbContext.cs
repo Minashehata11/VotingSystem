@@ -30,6 +30,7 @@ namespace DAL.VotingSystem.Context
             builder.Entity<VoterCandidateCategory>().HasKey(x => new { x.CategoryId, x.CandidateId });
         }
 
+
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Candidate> Candidates { get; set; }
         public DbSet<Category> Categories { get; set; }

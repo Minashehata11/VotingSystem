@@ -1,4 +1,5 @@
 ﻿using DAL.VotingSystem.Entities.UserIdentity;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace BLL.VotingSystem.Services
 {
     public interface ITokenService
     {
-        string GenerateToken(ApplicationUser user); 
+      public Task<string> GenerateToken(ApplicationUser user); 
     }
 }

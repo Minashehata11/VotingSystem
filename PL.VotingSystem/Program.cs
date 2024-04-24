@@ -27,7 +27,9 @@ namespace PL.VotingSystem
             });
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<string>>(options =>
             {
-                // Configure identity options (password requirements etc.)
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 6;
             })
      .AddEntityFrameworkStores<ApplicationDbContext>()
      .AddSignInManager<SignInManager<ApplicationUser>>();
@@ -40,7 +42,8 @@ namespace PL.VotingSystem
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:Key"])),
                         ValidateIssuer = true,
                         ValidIssuer = builder.Configuration["Token:Issuer"],
-                        ValidateAudience = false
+                        ValidateAudience = false,
+                        
                     };
                 });
 

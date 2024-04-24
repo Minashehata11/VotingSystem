@@ -27,6 +27,7 @@ namespace DAL.VotingSystem.Entities
 
         public string? Jop { get; set; }
 
+        public int NumberOfVote { get; set; } = 0;
 
         public List<Post> Posts { get; set; }   // one Candidate Have Many Posts
 

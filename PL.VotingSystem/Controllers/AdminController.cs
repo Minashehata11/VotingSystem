@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PL.VotingSystem.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    public class AdminController : ControllerBase
+   
+    [Authorize(AuthenticationSchemes = "Bearer",Roles ="Admin")]
+    public class AdminController : BaseController
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _UnitOfWork;
