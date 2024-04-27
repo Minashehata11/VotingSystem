@@ -11,5 +11,7 @@ namespace BLL.VotingSystem.Dtos
         public string CategoryName { get; set; }
 
         public int NumberOfCandidates { get; set;}
+
+        public byte[] Logo { get; set; }
     }
 }

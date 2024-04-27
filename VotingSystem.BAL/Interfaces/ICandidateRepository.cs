@@ -9,5 +9,6 @@ namespace BLL.VotingSystem.Interfaces
 {
     public interface ICandidateRepository:IGenericRepository<Candidate>
     {
+        public Task<List<Candidate>> GetByManyIdsAsync(List<string> candiateIds);
     }
 }

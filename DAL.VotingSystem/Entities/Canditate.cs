@@ -28,7 +28,8 @@ namespace DAL.VotingSystem.Entities
         public string? Jop { get; set; }
 
         public int NumberOfVote { get; set; } = 0;
-
+        public Category Category { get; set; }
+        public int? CategoryId { get; set; }
         public List<Post> Posts { get; set; }   // one Candidate Have Many Posts
 
         public List<VoterCandidateCategory> voterCandidateCategories { get; set; }

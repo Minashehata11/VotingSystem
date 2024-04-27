@@ -36,11 +36,12 @@ namespace BLL.VotingSystem.Repository
         public IEnumerable<ViewMangeElectionDto> MangeElectionDtos()
         {
             return
-            _context.voterCandidateCategories.Include(x => x.Category).GroupBy(x => x.Category.Name).Select(x => new ViewMangeElectionDto()
+            _context.Candidates.Include(x => x.Category).GroupBy(x => x.Category).Select(x => new ViewMangeElectionDto()
             {
-                CategoryName = x.Key,
+                CategoryName = x.Key.Name,
                 NumberOfCandidates = x.Count(),
-            }) ; 
+                Logo=x.Key.CategoryLogo
+                }) ; 
             
         }
     }

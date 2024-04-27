@@ -4,6 +4,7 @@ using DAL.VotingSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.VotingSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240427154907_AddCategoryIdIntoCandidate")]
+    partial class AddCategoryIdIntoCandidate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,7 +40,6 @@ namespace DAL.VotingSystem.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("CategoryId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Graduate")
@@ -70,9 +71,6 @@ namespace DAL.VotingSystem.Migrations
 
                     b.Property<byte[]>("CategoryLogo")
                         .HasColumnType("varbinary(max)");
-
-                    b.Property<DateTime>("DateOfEndVoting")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -395,10 +393,8 @@ namespace DAL.VotingSystem.Migrations
                         .IsRequired();
 
                     b.HasOne("DAL.VotingSystem.Entities.Category", "Category")
-                        .WithMany("Candidates")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
 
                     b.Navigation("Category");
 
@@ -514,8 +510,6 @@ namespace DAL.VotingSystem.Migrations
 
             modelBuilder.Entity("DAL.VotingSystem.Entities.Category", b =>
                 {
-                    b.Navigation("Candidates");
-
                     b.Navigation("voterCandidateCategories");
                 });
 

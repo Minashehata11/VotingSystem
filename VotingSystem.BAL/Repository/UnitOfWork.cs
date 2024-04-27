@@ -16,12 +16,16 @@ namespace BLL.VotingSystem.Repository
         public IVoterRepository voterRepository { get ; set ; }
 
         public ICandidateRepository candidateRepository { get; set; }
+        public IVotingRepository VotingRepository { get; set; }
+        public ICategoryRepository CategoryRepository { get ; set ; }
 
         public UnitOfWork(ApplicationDbContext context)
         {
             AdminRepository = new AdminRepository(context);
             voterRepository = new VoterRepository(context);
             candidateRepository = new CandidateRepository(context);
+            VotingRepository = new VotingRepository(context);
+            CategoryRepository = new CategoryRepository(context);
             _context = context;
         }
         public int Commit()

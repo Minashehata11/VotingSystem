@@ -5,6 +5,7 @@ using DAL.VotingSystem.Entities.UserIdentity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PL.VotingSystem.Controllers
 {
@@ -35,7 +36,7 @@ namespace PL.VotingSystem.Controllers
             if (!_allowedExtensions.Contains(Path.GetExtension(dto.ImageCard.FileName).ToLower()))
                 return BadRequest("ONly JPG and Png Allowed");
             if (dto.ImageCard.Length > _maxAllowedPosterSize)
-                return BadRequest("Max Allowed is 1M");
+                return BadRequest("Max Allowed is 2M");
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user != null)
                 return  BadRequest($"Registered {dto.Email} Already Token");
@@ -78,15 +79,40 @@ namespace PL.VotingSystem.Controllers
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
                 return BadRequest("NotFound User");
-            var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
+            if (await _userManager.IsLockedOutAsync(user))
+            {
+                ModelState.AddModelError(string.Empty, "Your account is locked out. Please try again later.");
+                return BadRequest("Account Blocked for 1 min");
+            }
+            var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, lockoutOnFailure: true);
             if (!result.Succeeded)
-                return BadRequest("Incorrect Password");
+            {
+                if (!await _userManager.IsLockedOutAsync(user))
+                {
+                    await _userManager.AccessFailedAsync(user);
+                }
+
+                // Check for lockout after attempted login
+                if (await _userManager.IsLockedOutAsync(user))
+                {
+                    ModelState.AddModelError(string.Empty, "Your account is locked out for 1 minute due to multiple failed login attempts. Please try again later.");
+                    return BadRequest("Locked for 1 min");
+                }
+                else
+                    return BadRequest("Incorrect Password");
+
+            }
+            else
+            {
+                await _userManager.ResetAccessFailedCountAsync(user);
             return new UserDto
             {
                 DisplayName = dto.Email.Split('@')[0],
                 Email = dto.Email,
                 Token = await _token.GenerateToken(user)
             };
+
+            }
         }
     }
 }

@@ -13,6 +13,8 @@ namespace BLL.VotingSystem.Interfaces
         public IVoterRepository voterRepository { get; set; }
 
         public ICandidateRepository candidateRepository { get; set; }
+        public IVotingRepository VotingRepository { get; set; }
+        public ICategoryRepository CategoryRepository { get; set; }
 
         public int Commit();
     }
