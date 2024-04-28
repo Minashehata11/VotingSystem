@@ -24,7 +24,7 @@ namespace PL.VotingSystem.Controllers
                 _context = context;     // assigining 
             }
             [HttpGet("{CandidateId}")]
-            public async Task<IActionResult> GetCandidateRecord([FromRoute] string CandidateId)
+            public async Task<IActionResult> GetCandidateRecord([FromRoute] int CandidateId)
             {
                 var data = _candidateRepository.GetById(CandidateId);
                 if (data == null)        // check for bad id 
