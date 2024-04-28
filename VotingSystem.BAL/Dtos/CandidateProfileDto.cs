@@ -13,7 +13,7 @@ namespace BLL.VotingSystem.Dtos
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime Birthday { get; set; }
-        public int Gender { get; set; }
+        public Enum Gender { get; set; }
         public string Job { get; set; }
 
         public string Graduate { get; set; }
