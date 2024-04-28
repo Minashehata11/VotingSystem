@@ -18,6 +18,7 @@ namespace BLL.VotingSystem.Repository
             _context = context;
         }
 
+
         public async Task<List<Candidate>> GetByManyIdsAsync(List<string> candiateIds)
         {
             List<Candidate> candidates = new List<Candidate>();
@@ -29,5 +30,6 @@ namespace BLL.VotingSystem.Repository
 
             return candidates;
         } 
+
     }
 }
