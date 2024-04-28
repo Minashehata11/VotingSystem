@@ -6,6 +6,7 @@ using DAL.VotingSystem.Entities.UserIdentity;
 using LearnApi.HelperServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PL.VotingSystem.Extentions;
@@ -27,7 +28,11 @@ namespace PL.VotingSystem
             });
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<string>>(options =>
             {
-                // Configure identity options (password requirements etc.)
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 6;
+                options.Lockout.MaxFailedAccessAttempts = 4;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
             })
      .AddEntityFrameworkStores<ApplicationDbContext>()
      .AddSignInManager<SignInManager<ApplicationUser>>();
@@ -40,7 +45,8 @@ namespace PL.VotingSystem
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:Key"])),
                         ValidateIssuer = true,
                         ValidIssuer = builder.Configuration["Token:Issuer"],
-                        ValidateAudience = false
+                        ValidateAudience = false,
+                        
                     };
                 });
 

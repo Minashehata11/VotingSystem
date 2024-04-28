@@ -27,8 +27,15 @@ namespace DAL.VotingSystem.Context
             .Property(p => p.Gender)
             .HasConversion<int>();
 
+            builder.Entity<Candidate>()
+            .HasOne(c => c.Category) 
+            .WithMany(cat => cat.Candidates) 
+            .HasForeignKey(c => c.CategoryId) 
+            .OnDelete(DeleteBehavior.SetNull).IsRequired(false); 
+
             builder.Entity<VoterCandidateCategory>().HasKey(x => new { x.CategoryId, x.CandidateId });
         }
+
 
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Candidate> Candidates { get; set; }

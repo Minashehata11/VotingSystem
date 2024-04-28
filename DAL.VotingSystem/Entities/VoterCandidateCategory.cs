@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DAL.VotingSystem.Entities
 {
-    public class VoterCandidateCategory
+    public class VoterCandidateCategory:BaseEntity
     {
         public Voter?  Voter { get; set; }
         [ForeignKey(nameof(Voter))]

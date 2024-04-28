@@ -8,7 +8,7 @@ namespace PL.VotingSystem.Extentions
         {
             services.AddSwaggerGen(option =>
             {
-                option.SwaggerDoc("v1", new OpenApiInfo { Title = "StoreApi", Version = "v1" });
+                option.SwaggerDoc("v1", new OpenApiInfo { Title = "Voting System", Version = "v1" });
                 var securitySchema = new OpenApiSecurityScheme
                 {
                     Description = "Jwt Authorization header",

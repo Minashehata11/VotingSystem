@@ -20,8 +20,8 @@ namespace DAL.VotingSystem.Entities
         public ApplicationUser User { get; set; }
 
         public byte[]?  ImageCard { get; set; }
-        public int NumberOfVots { get; set; }
         public List<VoterCandidateCategory> voterCandidateCategories { get; set; }
+
         
 
 

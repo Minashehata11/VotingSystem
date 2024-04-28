@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using BLL.VotingSystem.Dtos;
+using DAL.VotingSystem.Entities;
 
 namespace LearnApi.HelperServices
 {
@@ -6,8 +8,7 @@ namespace LearnApi.HelperServices
     {
         public MapperProfile()
         {
-                        
-
+            CreateMap<CreateCategoryDto, Category>();
         }
     }
 }

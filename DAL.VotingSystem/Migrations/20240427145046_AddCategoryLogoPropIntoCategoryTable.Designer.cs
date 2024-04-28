@@ -4,6 +4,7 @@ using DAL.VotingSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.VotingSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240427145046_AddCategoryLogoPropIntoCategoryTable")]
+    partial class AddCategoryLogoPropIntoCategoryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,10 +39,6 @@ namespace DAL.VotingSystem.Migrations
                     b.Property<string>("CandidateId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("CategoryId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
                     b.Property<string>("Graduate")
                         .HasColumnType("nvarchar(max)");
 
@@ -55,24 +53,19 @@ namespace DAL.VotingSystem.Migrations
 
                     b.HasKey("CandidateId");
 
-                    b.HasIndex("CategoryId");
-
                     b.ToTable("Candidates");
                 });
 
             modelBuilder.Entity("DAL.VotingSystem.Entities.Category", b =>
                 {
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("CategoryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("CategoryId"), 1L, 1);
 
                     b.Property<byte[]>("CategoryLogo")
                         .HasColumnType("varbinary(max)");
-
-                    b.Property<DateTime>("DateOfEndVoting")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -394,14 +387,6 @@ namespace DAL.VotingSystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAL.VotingSystem.Entities.Category", "Category")
-                        .WithMany("Candidates")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
                     b.Navigation("User");
                 });
 
@@ -514,8 +499,6 @@ namespace DAL.VotingSystem.Migrations
 
             modelBuilder.Entity("DAL.VotingSystem.Entities.Category", b =>
                 {
-                    b.Navigation("Candidates");
-
                     b.Navigation("voterCandidateCategories");
                 });
 
