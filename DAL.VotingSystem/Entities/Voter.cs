@@ -18,12 +18,9 @@ namespace DAL.VotingSystem.Entities
         public string VoterId { get; set; }
         [ForeignKey("VoterId")]
         public ApplicationUser User { get; set; }
-
         public byte[]?  ImageCard { get; set; }
+        public Category Category { get; set; }
+        public int? CategoryId { get; set; }
         public List<VoterCandidateCategory> voterCandidateCategories { get; set; }
-
-        
-
-
     }
 }

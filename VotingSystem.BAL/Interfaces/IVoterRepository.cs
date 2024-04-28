@@ -9,6 +9,9 @@ namespace BLL.VotingSystem.Interfaces
 {
     public interface IVoterRepository:IGenericRepository<Voter>
     {
+        public Task<List<Voter>> GetAllUsersWithIncludeAsync();
+        public Task<List<Voter>> SearchUserByNameAsync(string? name);
+        public Task<Voter> GetByIdWithIncludeAsync(string id);
 
     }
 }

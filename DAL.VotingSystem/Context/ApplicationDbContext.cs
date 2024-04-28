@@ -33,6 +33,9 @@ namespace DAL.VotingSystem.Context
             .HasForeignKey(c => c.CategoryId) 
             .OnDelete(DeleteBehavior.SetNull).IsRequired(false); 
 
+            builder.Entity<Voter>().HasOne(v => v.Category)
+                .WithOne().OnDelete(DeleteBehavior.SetNull).IsRequired(false);
+
             builder.Entity<VoterCandidateCategory>().HasKey(x => new { x.CategoryId, x.CandidateId });
         }
 
