@@ -2,6 +2,7 @@
 using BLL.VotingSystem.Dtos;
 using DAL.VotingSystem.Context;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PL.VotingSystem.Controllers
 {
@@ -9,6 +10,8 @@ namespace PL.VotingSystem.Controllers
     {
         [Route("api/candidate")]
         [ApiController]
+        
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Candidate ")]
         public class CandidateController : ControllerBase
         {
             private readonly ICandidateRepository _candidateRepository;
