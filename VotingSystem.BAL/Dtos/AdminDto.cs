@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace BLL.VotingSystem.Dtos
 {
-    public class UsersDto
+    public class AdminDto
     {
-        public string VoterId { get; set; }
-        public string Name { get; set; }
-        public string CategoryName { get; set; }
-        public int SSN { get; set; }
+        public string AdminId { get; set; }
 
+        public string Name { get; set; }
+        public int SSN { get; set; }
     }
 }

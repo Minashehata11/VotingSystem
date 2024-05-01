@@ -11,5 +11,6 @@ namespace BLL.VotingSystem.Interfaces
     public interface ICategoryRepository:IGenericRepository<Category>
     {
         public Task<CategoryDto> GetByIdWithIncludeAsync(int id);
+        public Task<Category> GetById(int id);
     }
 }

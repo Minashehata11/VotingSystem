@@ -1,4 +1,5 @@
-﻿using DAL.VotingSystem.Entities;
+﻿using BLL.VotingSystem.Interfaces;
+using DAL.VotingSystem.Entities;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace BLL.VotingSystem.Dtos
 {
     public class CreateCategoryDto
     {
-
+        
         [StringLength(50), MinLength(5)]
         public string Name { get; set; }
         public IFormFile? CategoryLogo { get; set; }

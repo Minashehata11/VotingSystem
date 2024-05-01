@@ -29,11 +29,11 @@ namespace DAL.VotingSystem.Entities.UserIdentity
 
         [StringLength(20), MinLength(3)]
         public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
         public string FullName => $"{FirstName} {LastName}";
         public string City { get; set; }
         [MaxLength(40)]
-        public string Street { get; set; }
+        public string? Street { get; set; }
         public DateTime DateOfBirth { get; set; }
 
         [NotMapped]

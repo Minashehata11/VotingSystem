@@ -1,18 +1,9 @@
-﻿using BLL.VotingSystem.Dtos;
-using DAL.VotingSystem.Entities;
-using DAL.VotingSystem.Entities.UserIdentity;
-using Humanizer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using NuGet.Common;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
+﻿using Microsoft.AspNetCore.Authorization;
 
 namespace PL.VotingSystem.Controllers
 {
 
-   // [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
+    //[Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
     public class AdminController : BaseController
     {
         #region ImageSettingAllowed
@@ -23,7 +14,7 @@ namespace PL.VotingSystem.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _UnitOfWork;
 
-        public AdminController(IUnitOfWork unitOfWork, IMapper mapper,UserManager<ApplicationUser> userManager)
+        public AdminController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             _UnitOfWork = unitOfWork;
             _mapper = mapper;
@@ -39,18 +30,19 @@ namespace PL.VotingSystem.Controllers
             return Ok(data);
         }
         [HttpGet("ManageElection")]
-        public async Task<IActionResult> ManageElection()
+        public async Task<ActionResult<List<ViewMangeElectionDto>>> ManageElection()
         {
 
-            var data = _UnitOfWork.AdminRepository.MangeElectionDtos();
-
+            var data = await _UnitOfWork.AdminRepository.MangeElectionDtos();
             return Ok(data);
         }
-        [HttpDelete]
+        [HttpDelete("{categoryId}")]
         public async Task<IActionResult> DeleteElection(int categoryId)
         {
+            if (categoryId == 0) return BadRequest("Id Required");
+
             var voting = await _UnitOfWork.VotingRepository.GetAllVotingByCategoryIdAsync(categoryId);
-            var category = _UnitOfWork.CategoryRepository.GetById(categoryId);
+            var category = await _UnitOfWork.CategoryRepository.GetById(categoryId);
 
             try {
                 if (voting.Count() > 0)
@@ -68,7 +60,7 @@ namespace PL.VotingSystem.Controllers
             return Ok(voting);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDto>> GetCategoryByIdAsync(int id)
         {
             if (id == 0)
@@ -78,8 +70,24 @@ namespace PL.VotingSystem.Controllers
             if (category == null) return NotFound("Not Found Category");
             return Ok(category);
         }
+
+        [HttpGet]
+        public async Task<ActionResult<List<AllCandidateDto>>> GetAllCandidates(string? name)
+        {
+            List<Candidate> candidates = new List<Candidate>();
+            if (string.IsNullOrEmpty(name))
+                candidates = await _UnitOfWork.candidateRepository.GetAllWithInclude();
+            else
+                candidates = await _UnitOfWork.candidateRepository.SearchUserByNameAsync(name);
+
+            if (candidates == null) return NotFound("Not Found Candidates");
+            var mappedCandidates = _mapper.Map<List<AllCandidateDto>>(candidates);
+            return Ok(mappedCandidates);
+        }
+
+
         [HttpPost]
-        public async Task<ActionResult<CreateCategoryDto>> AddNewElection([FromForm] CreateCategoryDto input)
+        public async Task<ActionResult<Category>> AddNewElection([FromForm] CreateCategoryDto input)
         {
             if (ModelState.IsValid)
             {
@@ -122,12 +130,12 @@ namespace PL.VotingSystem.Controllers
             else
                 users = await _UnitOfWork.voterRepository.SearchUserByNameAsync(name);
 
-          
-              var mappedUser=_mapper.Map<List<UsersDto>>(users);
-              return mappedUser;
+
+            var mappedUser = _mapper.Map<List<UsersDto>>(users);
+            return mappedUser;
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<UsersDto>> DeleteUser(string id)
         {
             if (id == null) return BadRequest("Not Found Id");
@@ -141,29 +149,210 @@ namespace PL.VotingSystem.Controllers
             if (appUser == null) return BadRequest("No User Found");
             var mappedUser = _mapper.Map<UsersDto>(user);
 
-            try{
-            await _userManager.DeleteAsync(appUser);
-            _UnitOfWork.voterRepository.Delete(user);
-            _UnitOfWork.Commit();   
+            try {
+                await _userManager.DeleteAsync(appUser);
             }
-            catch(Exception ex){
-                return BadRequest(ex.Message);  
+            catch (Exception ex) {
+                return BadRequest(ex.Message);
             }
             return Ok(mappedUser);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<UserViewDto>> GetUserById(string id)
         {
+            if (id == null) return BadRequest("Id Required");
+
+            string base64Image = "";
             var user = await _UnitOfWork.voterRepository.GetByIdWithIncludeAsync(id);
-                
+            if (user is null)
+                return BadRequest("User not found");
+            if (user.User.Image != null)
+                base64Image = Convert.ToBase64String(user.User.Image);
+
+
             var mappedUser = _mapper.Map<UserViewDto>(user);
             if (user.User.Gender == Gender.Male)
                 mappedUser.Gender = "Male";
             else
                 mappedUser.Gender = "Female";
-
+            mappedUser.DateOfBirth = user.User.DateOfBirth.ToString("yyyy-MM-dd");
+            mappedUser.ImageProile = base64Image;
             return mappedUser;
         }
+        [HttpGet]
+        public async Task<ActionResult<List<AdminDto>>> ManageAdmin(string? name)
+        {
+            List<Admin> admins = new List<Admin>();
+            if (string.IsNullOrEmpty(name))
+                admins = await _UnitOfWork.AdminRepository.GetAllUsersWithIncludeAsync();
+            else
+                admins = await _UnitOfWork.AdminRepository.SearchUserByNameAsync(name);
+
+            var mappedAdmin = _mapper.Map<List<AdminDto>>(admins);
+
+            return Ok(mappedAdmin);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<AdminDto>> DeleteAdmin(string id)
+        {
+            if (id == null) return BadRequest("Not Found Id");
+
+            var admin = await _UnitOfWork.AdminRepository.GetByIdWithIncludeAsync(id);
+
+            if (admin == null) return BadRequest("No User Found");
+
+            var appUser = await _userManager.FindByIdAsync(id);
+
+            if (appUser == null) return BadRequest("No User Found");
+            var mappedAdmin = _mapper.Map<AdminDto>(admin);
+
+            try
+            {
+                await _userManager.DeleteAsync(appUser);
+                
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return Ok(mappedAdmin);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<AdminViewDto>> GetAdminById(string id)
+        {
+            if (id == null) return BadRequest("Id Required");
+
+            string base64Image = "";
+            var admin = await _UnitOfWork.AdminRepository.GetByIdWithIncludeAsync(id);
+            if (admin is null)
+                return BadRequest("Not Found Admin");
+            if (admin.User.Image != null)
+                base64Image = Convert.ToBase64String(admin.User.Image);
+
+            var mappedAdmin = _mapper.Map<AdminViewDto>(admin);
+            if (admin.User.Gender == Gender.Male)
+                mappedAdmin.Gender = "Male";
+            else
+                mappedAdmin.Gender = "Female";
+            mappedAdmin.DateOfBirth = admin.User.DateOfBirth.ToString("yyyy-MM-dd");
+            mappedAdmin.ImageProile = base64Image;
+            return mappedAdmin;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<CreateAdminDto>> CreateNewAdmin([FromForm] CreateAdminDto input)
+        {
+            if (ModelState.IsValid)
+            {
+                if (!_allowedExtensions.Contains(Path.GetExtension(input.ImageProfile.FileName).ToLower()))
+                    return BadRequest("ONly JPG and Png Allowed");
+                if (input.ImageProfile.Length > _maxAllowedPosterSize)
+                    return BadRequest("Max Allowed is 2M");
+                var user = await _userManager.FindByEmailAsync(input.Email);
+                if (user != null)
+                    return BadRequest($"Registered {input.Email} Already Token");
+
+                using var dataStream = new MemoryStream();
+                await input.ImageProfile.CopyToAsync(dataStream);
+                var appUser = new ApplicationUser
+                {
+                    Email = input.Email,
+                    City = input.City,
+                    UserName = input.Name,
+                    FirstName = input.Email.Split('@')[0],
+                    DateOfBirth = input.DateOfBirth,
+                    SSN = input.SSN,
+
+                    Admin = new Admin
+                    {
+                    },
+
+                };
+                appUser.Image = dataStream.ToArray();
+
+
+                var result = await _userManager.CreateAsync(appUser, input.Password);
+                if (result.Succeeded)
+                    return Ok(input);
+                else
+                    return BadRequest("Error Create");
+
+            }
+            else
+                return BadRequest("Not Valid");
+
+
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Post>> DeleteCandidatePosts(int id)
+        {
+            if (id == 0) return BadRequest("Not Found Id");
+            var post = await _UnitOfWork.PosterRepository.GetByIdAsycn(id);
+
+            if (post == null)
+                return BadRequest("Not Found Post");
+            _UnitOfWork.PosterRepository.Delete(post);
+            _UnitOfWork.Commit();
+            return Ok(post);
+        }
+        [HttpPost]
+        public async Task<ActionResult<CreateCandidateDto>> AddCandidate([FromForm] CreateCandidateDto input)
+        {
+            if (input == null) return BadRequest("NOT Created");
+            if (!_allowedExtensions.Contains(Path.GetExtension(input.Image.FileName).ToLower()))
+                return BadRequest("ONly JPG and Png Allowed");
+            if (input.Image.Length > _maxAllowedPosterSize)
+                return BadRequest("Max Allowed is 2M");
+            var user = await _userManager.FindByEmailAsync(input.Email);
+            if (user != null)
+                return BadRequest($"Registered {input.Email} Already Token");
+
+            using var dataStream = new MemoryStream();
+            await input.Image.CopyToAsync(dataStream);
+
+            ApplicationUser appUser = new ApplicationUser
+            {
+                City = input.City,
+                DateOfBirth = input.DateOfBirth,
+                Email = input.Email,
+                UserName = input.Name,
+                FirstName = input.Name,
+                LastName = input.LastName,
+                Gender = input.Gender,
+                SSN = input.SSN,
+                Image = dataStream.ToArray(),
+                Candidate = new Candidate
+                {
+                    Graduate = input.Graduate,
+                    Qulification = input.Qulification,
+                    Jop = input.jop,
+
+                }
+
+            };
+            var result = await _userManager.CreateAsync(appUser, input.Password);
+
+            if (!result.Succeeded)
+                return BadRequest("Error In Create");
+            await _userManager.AddToRoleAsync(appUser, "Candidate");
+            return Ok(input);
+        }
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteCandidate(string id)
+        {
+            if (id == null) return BadRequest("Id Required");
+            var candidates=  _UnitOfWork.candidateRepository.GetById(id);
+            if (candidates == null) return BadRequest("Not Found");
+            var appUser = await _userManager.FindByIdAsync(candidates.CandidateId);
+            if (appUser == null) return BadRequest("Not Found");
+            await _userManager.DeleteAsync(appUser);
+            return Ok();
+
+        }
     }
+
 }

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using PL.VotingSystem.Dtos;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,16 +34,34 @@ namespace BLL.VotingSystem.Repository
             return data;
         }
 
-        public IEnumerable<ViewMangeElectionDto> MangeElectionDtos()
+        public async Task<List<ViewMangeElectionDto>> MangeElectionDtos()
         {
-            return
-            _context.Candidates.Include(x => x.Category).GroupBy(x => x.Category).Select(x => new ViewMangeElectionDto()
+            var categories =   await  _context.Categories.Include(x => x.Candidates).ToListAsync();
+            List<ViewMangeElectionDto> data=new List<ViewMangeElectionDto>();
+            string base64Image="";
+            foreach (var category in categories)
             {
-                CategoryName = x.Key.Name,
-                NumberOfCandidates = x.Count(),
-                Logo=x.Key.CategoryLogo
-                }) ; 
-            
+                if(category.CategoryLogo != null)                 
+                  base64Image = Convert.ToBase64String(category.CategoryLogo);
+
+                ViewMangeElectionDto viewMangeElectionDto = new ViewMangeElectionDto
+                {
+                    id = category.CategoryId,
+                    CategoryName = category.Name,
+                    Logo = base64Image,
+                    NumberOfCandidates = category.Candidates.Count(),
+                };
+                data.Add(viewMangeElectionDto);
+            }
+              return  data;
         }
+            public async Task<List<Admin>> GetAllUsersWithIncludeAsync()
+     => await _context.Admins.Include(v => v.User).ToListAsync();
+        public async Task<Admin> GetByIdWithIncludeAsync(string id)
+      => await _context.Admins.Include(v => v.User).SingleOrDefaultAsync(v => v.AdminId == id);
+
+
+        public async Task<List<Admin>> SearchUserByNameAsync(string? name)
+        => await _context.Admins.Include(v => v.User).Where(x => x.User.UserName.Trim().ToLower().Contains(name.Trim().ToLower())).ToListAsync();
     }
 }

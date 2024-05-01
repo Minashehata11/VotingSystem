@@ -16,6 +16,8 @@ namespace BLL.VotingSystem.Interfaces
         public IVotingRepository VotingRepository { get; set; }
         public ICategoryRepository CategoryRepository { get; set; }
 
+        public IPosterRepository PosterRepository { get; set; }
+
         public int Commit();
     }
 }

@@ -7,6 +7,8 @@ namespace BLL.VotingSystem.Dtos.Account
         [EmailAddress]
         public string Email { get; set; }
 
+        [DataType(DataType.Password)]
+        [Required]
         public string Password { get; set; }
 
     }

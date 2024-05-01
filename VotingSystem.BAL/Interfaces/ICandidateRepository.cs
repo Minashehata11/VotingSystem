@@ -10,6 +10,10 @@ namespace BLL.VotingSystem.Interfaces
     public interface ICandidateRepository:IGenericRepository<Candidate>
     {
         public Task<List<Candidate>> GetByManyIdsAsync(List<string> candiateIds);
+        public Task<Candidate> GetByIdWithInclude(string id);
+
+        public Task<List<Candidate>> GetAllWithInclude();
+        public Task<List<Candidate>> SearchUserByNameAsync(string? name);
 
     }
 }

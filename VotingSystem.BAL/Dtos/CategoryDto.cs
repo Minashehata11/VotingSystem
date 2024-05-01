@@ -11,8 +11,8 @@ namespace BLL.VotingSystem.Dtos
     {
         public int id { get; set; }
         public string Name { get; set; }
-        public byte[] CategoryLogo { get; set; }
-        public DateTime DateOfEndVoting { get; set; }
+        public string CategoryLogo { get; set; }
+        public string DateOfEndVoting { get; set; }
         public List<CandidateDto> candidateDtos { get; set; }
         
     }

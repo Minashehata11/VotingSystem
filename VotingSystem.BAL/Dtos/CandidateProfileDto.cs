@@ -1,4 +1,6 @@
 ﻿using DAL.VotingSystem.Entities;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +11,11 @@ namespace BLL.VotingSystem.Dtos
 {
     public class CandidateProfileDto
     {
-        public byte[]? Image { get; set; }
+        public string Image { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public DateTime Birthday { get; set; }
-        public Enum Gender { get; set; }
+        public string Birthday { get; set; }
+        public string Gender { get; set; }
         public string Job { get; set; }
 
         public string Graduate { get; set; }

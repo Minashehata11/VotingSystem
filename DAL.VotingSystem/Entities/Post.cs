@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DAL.VotingSystem.Entities
 {
-    public class Post
+    public class Post:BaseEntity
     {
         public int PostId { get; set; }
 

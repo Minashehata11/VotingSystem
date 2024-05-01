@@ -18,7 +18,11 @@ namespace BLL.VotingSystem.Repository
             _context = context;
         }
 
+        public async Task<List<Candidate>> GetAllWithInclude()
+        => await  _context.Candidates.Include(c=>c.User).ToListAsync(); 
 
+        public async Task<Candidate> GetByIdWithInclude(string id)
+        => await _context.Candidates.Include(c=>c.Posts).Include(c=>c.User).SingleOrDefaultAsync(c=>c.CandidateId==id);
         public async Task<List<Candidate>> GetByManyIdsAsync(List<string> candiateIds)
         {
             List<Candidate> candidates = new List<Candidate>();
@@ -29,7 +33,8 @@ namespace BLL.VotingSystem.Repository
             }
 
             return candidates;
-        } 
-
+        }
+        public async Task<List<Candidate>> SearchUserByNameAsync(string? name)
+       => await _context.Candidates.Include(v => v.User).Where(x => x.User.UserName.Trim().ToLower().Contains(name.Trim().ToLower())).ToListAsync();
     }
 }

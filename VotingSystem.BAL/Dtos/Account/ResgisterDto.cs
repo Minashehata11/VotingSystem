@@ -9,8 +9,8 @@ namespace BLL.VotingSystem.Dtos.Account
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
         [MinLength(6,ErrorMessage ="Min Length 6")]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         public string UserName { get; set; }
@@ -27,8 +27,7 @@ namespace BLL.VotingSystem.Dtos.Account
         [MaxLength(40)]
         public string Street { get; set; }
         public DateTime DateOfBirth { get; set; }
-        [Required(ErrorMessage ="ImageCard Required")]
-        public IFormFile ImageCard { get; set; }
+        public IFormFile? ImageCard { get; set; }
 
     }
 }

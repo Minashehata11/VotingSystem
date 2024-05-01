@@ -8,10 +8,11 @@ namespace BLL.VotingSystem.Dtos
 {
     public class ViewMangeElectionDto
     {
+        public int id { get; set; }
         public string CategoryName { get; set; }
 
         public int NumberOfCandidates { get; set;}
 
-        public byte[] Logo { get; set; }
+        public string Logo { get; set; }
     }
 }

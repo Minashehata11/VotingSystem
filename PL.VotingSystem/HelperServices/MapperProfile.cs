@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BLL.VotingSystem.Dtos;
 using DAL.VotingSystem.Entities;
+using DAL.VotingSystem.Entities.UserIdentity;
 
 namespace LearnApi.HelperServices
 {
@@ -16,9 +17,22 @@ namespace LearnApi.HelperServices
                 .ForMember(dest => dest.Email, src => src.MapFrom(x => x.User.Email))
                 .ForMember(dest => dest.SSN, src => src.MapFrom(x => x.User.SSN))
                 .ForMember(dest => dest.City, src => src.MapFrom(x => x.User.City))
-                .ForMember(dest => dest.DateOfBirth, src => src.MapFrom(x => x.User.DateOfBirth));
-                
-                
+                .ForMember(dest => dest.DateOfBirth, src => src.MapFrom(x => x.User.DateOfBirth))
+                ;
+
+            CreateMap<Admin, AdminDto>()
+                .ForMember(dest => dest.Name, src => src.MapFrom(a => a.User.UserName))
+                .ForMember(dest => dest.SSN, src => src.MapFrom(a => a.User.SSN));
+            CreateMap<Admin, AdminViewDto>().ForMember(dest => dest.Name, src => src.MapFrom(x => x.User.UserName))
+                .ForMember(dest => dest.Email, src => src.MapFrom(x => x.User.Email))
+                .ForMember(dest => dest.SSN, src => src.MapFrom(x => x.User.SSN))
+                .ForMember(dest => dest.City, src => src.MapFrom(x => x.User.City))
+                .ForMember(dest => dest.DateOfBirth, src => src.MapFrom(x => x.User.DateOfBirth))
+                ;
+            CreateMap<CreateAdminDto, ApplicationUser>();
+            CreateMap<Candidate, AllCandidateDto>().ForMember(dest=>dest.FullName,src=>src.MapFrom(x=>x.User.FullName));
+
+
         }
     }
 }

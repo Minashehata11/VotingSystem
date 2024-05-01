@@ -32,7 +32,8 @@ namespace BLL.VotingSystem.Services
             var claims = new List<Claim>
     {
         new Claim(ClaimTypes.Email, appUser.Email),
-        new Claim(ClaimTypes.GivenName, appUser.FirstName),
+        new Claim(ClaimTypes.GivenName, appUser.FirstName), 
+        new Claim(ClaimTypes.NameIdentifier, appUser.Id), 
     };
 
             if (userRoles.Any())
