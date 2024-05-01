@@ -10,7 +10,10 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PL.VotingSystem.Extentions;
+using System.Globalization;
 using System.Text;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace PL.VotingSystem
 {
@@ -18,6 +21,25 @@ namespace PL.VotingSystem
     {
         public static async Task Main(string[] args)
         {
+            
+           /*
+           
+           * create a xml file in the same directory
+           
+           XmlSerializer xmlSerializer = new XmlSerializer(typeof(VoterTest1));
+           FileStream stream = File.OpenWrite("myfilterL.xml");
+           
+           *abbend data in it based on VoterTest1 model 
+           xmlSerializer.Serialize(stream, new VoterTest1() { Name = "ali", NationalNumber = "72727383839" });
+           
+           stream.Dispose();
+           */
+           
+           /* testing the function , should return true 
+           var ans = StringInXml("myfilter.xml","20205020");
+           Console.WriteLine(ans);
+           */
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -78,5 +100,32 @@ namespace PL.VotingSystem
 
             app.Run();
         }
+
+        // searching function return boolean , true if national number exists in xml file 
+        public static bool StringInXml(string xmlFilePath, string searchString)
+        {
+            
+            if (string.IsNullOrEmpty(xmlFilePath) || string.IsNullOrEmpty(searchString))
+            {
+                
+                return false; // Handle empty inputs 
+            }
+
+            try
+            {
+                // Use XDocument for clean and efficient XML handling
+                var doc = XDocument.Load(xmlFilePath);
+                return doc.ToString().Contains(searchString); // return true if find or false if not or through exceptions
+            }
+            catch (Exception ex)
+            {
+                // Handle potential exceptions (e.g., file not found, invalid XML)
+                Console.WriteLine($"Error: {ex.Message}");
+               
+                return false;
+            }
+            
+        }
     }
+
 }
