@@ -1,13 +1,12 @@
 ﻿using DAL.VotingSystem.Context;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace PL.VotingSystem.Controllers
 {
     namespace PL.VotingSystem.Controllers
     {
-        
-       [Authorize(AuthenticationSchemes = "Bearer", Roles = "Candidate")]
+
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = "Candidate")]
         public class CandidateController : BaseController
         {
             #region ImageSettingAllowed

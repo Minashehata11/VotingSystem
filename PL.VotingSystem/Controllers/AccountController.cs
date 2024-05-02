@@ -1,6 +1,5 @@
 ﻿using BLL.VotingSystem.Dtos.Account;
 using BLL.VotingSystem.Services;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace PL.VotingSystem.Controllers

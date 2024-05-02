@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-
-namespace PL.VotingSystem.Controllers
+﻿namespace PL.VotingSystem.Controllers
 {
 
-    //[Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
     public class AdminController : BaseController
     {
         #region ImageSettingAllowed

@@ -36,7 +36,7 @@ namespace DAL.VotingSystem.Context
             builder.Entity<Voter>().HasOne(v => v.Category)
                 .WithOne().OnDelete(DeleteBehavior.SetNull).IsRequired(false);
 
-            builder.Entity<VoterCandidateCategory>().HasKey(x => new { x.CategoryId, x.CandidateId });
+            builder.Entity<VoterCandidateCategory>().HasKey(x => new { x.CategoryId, x.CandidateId,x.VoterId });
         }
 
 

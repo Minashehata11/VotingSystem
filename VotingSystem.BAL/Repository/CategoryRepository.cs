@@ -29,7 +29,7 @@ namespace BLL.VotingSystem.Repository
                       Name = c.Name,
                      DateOfEndVoting = c.DateOfEndVoting.ToString("yyyy-mm-dd"),
                       CategoryLogo = c.CategoryLogo != null ? Convert.ToBase64String(c.CategoryLogo) : null, 
-                    candidateDtos = c.Candidates.Select(u =>new CandidateDto {Name= u.User.UserName,NumberOfVotes= u.NumberOfVote }).ToList(),
+                    candidateDtos = c.Candidates.Select(u =>new CandidateDto {Name= u.User.UserName,NumberOfVotes= u.NumberOfVote,Id=u.CandidateId }).ToList(),
                     
              }).SingleOrDefaultAsync(c => c.id == id);
 
