@@ -31,6 +31,10 @@ namespace LearnApi.HelperServices
                 ;
             CreateMap<CreateAdminDto, ApplicationUser>();
             CreateMap<Candidate, AllCandidateDto>().ForMember(dest=>dest.FullName,src=>src.MapFrom(x=>x.User.FullName));
+            CreateMap<Post, PostDtoView>()
+                .ForMember(dest=>dest.FullName,src=>src.MapFrom(x=>x.Candidate.User.FullName))
+                .ForMember(dest=>dest.Qualfication,src=>src.MapFrom(x=>x.Candidate.Qulification))
+                ;
 
 
         }

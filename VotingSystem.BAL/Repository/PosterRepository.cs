@@ -1,12 +1,7 @@
 ﻿using BLL.VotingSystem.Interfaces;
 using DAL.VotingSystem.Context;
 using DAL.VotingSystem.Entities;
-using Microsoft.CodeAnalysis.CSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.VotingSystem.Repository
 {
@@ -19,7 +14,13 @@ namespace BLL.VotingSystem.Repository
             _context = context;
         }
 
+        public async Task<List<Post>> GetAllPostsWithCandidateIdAsync(string candidateId)
+        => await _context.Posts.Where(p=>p.CandidateId==candidateId).ToListAsync();
+
+        public async Task<List<Post>> GetAllPostsWithIncludeAsync()
+        => await _context.Posts.Include(p => p.Candidate).ThenInclude(c=>c.User).ToListAsync();
+
         public async Task<Post> GetByIdAsycn(int id)
-        =>  await _context.Posts.FindAsync(id);
+        => await _context.Posts.FindAsync(id);
     }
 }

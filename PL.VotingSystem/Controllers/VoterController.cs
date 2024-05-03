@@ -36,9 +36,14 @@ namespace PL.VotingSystem.Controllers
             if (voter == null) return BadRequest("Not Authorize");
             if (voter.CategoryId == id)
             {
-                var category = await _unitOfWork.CategoryRepository.GetByIdWithIncludeAsync(id);
-                if (category == null) return NotFound("Not Found Category");
-                return Ok(category);
+                //Check Time Of Voting Ended Or NOt Before Show CategoryOfVoting
+                var category = await _unitOfWork.CategoryRepository.GetById(id);
+                if (category.DateOfEndVoting < DateTime.Now || category.DateOfEndVoting == DateTime.Now)
+                    return BadRequest($"Voting was Ended in {category.DateOfEndVoting}");
+                var categoryDto = await _unitOfWork.CategoryRepository.GetByIdWithIncludeAsync(id);
+                if (categoryDto == null) return NotFound("Not Found Category");
+                
+                return Ok(categoryDto);
 
             }
             else
@@ -92,6 +97,29 @@ namespace PL.VotingSystem.Controllers
 
 
 
+        }
+        [HttpGet]
+        public async Task<ActionResult<List<PostDtoView>>> GetAllPostsOfCandidates()
+        {
+            List<PostDtoView> postDtoViews = new List<PostDtoView>();
+            var posts = await _unitOfWork.PosterRepository.GetAllPostsWithIncludeAsync();
+            if (posts.Any())
+            {
+                foreach (var post in posts)
+                {
+                    PostDtoView postDtoView = new PostDtoView
+                    {
+                        Image = Convert.ToBase64String(post.PostImage),
+                        Decription = post.Decription,
+                        FullName = post.Candidate.User.FullName,
+                        PostId = post.PostId,
+                        Qualfication = post.Candidate.Qulification
+                    };
+                    postDtoViews.Add(postDtoView);
+                }
+                return Ok(postDtoViews);
+            }
+            return BadRequest("Not Posts Found");
         }
     }
 }

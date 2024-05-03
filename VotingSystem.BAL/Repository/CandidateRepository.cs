@@ -19,7 +19,7 @@ namespace BLL.VotingSystem.Repository
         }
 
         public async Task<List<Candidate>> GetAllWithInclude()
-        => await  _context.Candidates.Include(c=>c.User).ToListAsync(); 
+        => await _context.Candidates.Include(c => c.User).Include(c => c.Posts).ToListAsync(); 
 
         public async Task<Candidate> GetByIdWithInclude(string id)
         => await _context.Candidates.Include(c=>c.Posts).Include(c=>c.User).SingleOrDefaultAsync(c=>c.CandidateId==id);
@@ -35,6 +35,6 @@ namespace BLL.VotingSystem.Repository
             return candidates;
         }
         public async Task<List<Candidate>> SearchUserByNameAsync(string? name)
-       => await _context.Candidates.Include(v => v.User).Where(x => x.User.UserName.Trim().ToLower().Contains(name.Trim().ToLower())).ToListAsync();
+       => await _context.Candidates.Include(v => v.User).Include(c => c.Posts).Where(x => x.User.UserName.Trim().ToLower().Contains(name.Trim().ToLower())).ToListAsync();
     }
 }

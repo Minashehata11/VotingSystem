@@ -1,7 +1,7 @@
 ﻿namespace PL.VotingSystem.Controllers
 {
 
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
+   [Authorize(AuthenticationSchemes = "Bearer", Roles = "Admin")]
     public class AdminController : BaseController
     {
         #region ImageSettingAllowed
@@ -42,7 +42,8 @@
             var voting = await _UnitOfWork.VotingRepository.GetAllVotingByCategoryIdAsync(categoryId);
             var category = await _UnitOfWork.CategoryRepository.GetById(categoryId);
 
-            try {
+            try
+            {
                 if (voting.Count() > 0)
                     await _UnitOfWork.VotingRepository.DeleteAllAsync(voting);
                 if (category == null)
@@ -147,10 +148,12 @@
             if (appUser == null) return BadRequest("No User Found");
             var mappedUser = _mapper.Map<UsersDto>(user);
 
-            try {
+            try
+            {
                 await _userManager.DeleteAsync(appUser);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(ex.Message);
             }
             return Ok(mappedUser);
@@ -209,7 +212,7 @@
             try
             {
                 await _userManager.DeleteAsync(appUser);
-                
+
             }
             catch (Exception ex)
             {
@@ -284,7 +287,29 @@
 
 
         }
-
+        [HttpGet]
+        public async Task<ActionResult< List<PostDtoView>>> GetAllPostsOfCandidates()
+        {
+            List<PostDtoView> postDtoViews = new List<PostDtoView>();
+          var posts= await _UnitOfWork.PosterRepository.GetAllPostsWithIncludeAsync();
+            if (posts.Any())
+            {
+                foreach (var post in posts)
+                {
+                    PostDtoView postDtoView = new PostDtoView
+                    {
+                        Image = Convert.ToBase64String(post.PostImage),
+                        Decription = post.Decription,
+                        FullName=post.Candidate.User.FullName,
+                        PostId = post.PostId,
+                        Qualfication = post.Candidate.Qulification
+                    };
+                    postDtoViews.Add(postDtoView);  
+            }    
+                return Ok(postDtoViews);
+            }
+            return BadRequest("Not Posts Found");
+        }
         [HttpDelete("{id}")]
         public async Task<ActionResult<Post>> DeleteCandidatePosts(int id)
         {
@@ -343,7 +368,7 @@
         public async Task<ActionResult> DeleteCandidate(string id)
         {
             if (id == null) return BadRequest("Id Required");
-            var candidates=  _UnitOfWork.candidateRepository.GetById(id);
+            var candidates = _UnitOfWork.candidateRepository.GetById(id);
             if (candidates == null) return BadRequest("Not Found");
             var appUser = await _userManager.FindByIdAsync(candidates.CandidateId);
             if (appUser == null) return BadRequest("Not Found");

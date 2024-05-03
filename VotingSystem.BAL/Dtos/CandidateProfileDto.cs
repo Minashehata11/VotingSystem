@@ -21,7 +21,6 @@ namespace BLL.VotingSystem.Dtos
         public string Graduate { get; set; }
 
         public string Qulification { get; set; }
-        public List<Post> Posts { get; set; }   // one Candidate Have Many Posts
         
     }
 }
