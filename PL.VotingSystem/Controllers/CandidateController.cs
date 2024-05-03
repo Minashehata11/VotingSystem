@@ -141,6 +141,28 @@ namespace PL.VotingSystem.Controllers
 
                 return Ok(input);
             }
+            [HttpPut("{postId}")]
+            public async Task<ActionResult<PostDto>> UpdatePost(int postId,[FromForm]PostDto input )
+            {
+                if (postId == 0)
+                    return BadRequest("Not found Id");
+                var post = await _unitOfWork.PosterRepository.GetByIdAsycn(postId);
+                if (post == null)
+                    return NotFound("Not Found Posts");
+                if (!_allowedExtensions.Contains(Path.GetExtension(input.Post.FileName).ToLower()))
+                    return BadRequest("Not Allowed Exitrons");
+
+                if (_maxAllowedPosterSize < input.Post.Length)
+                    return BadRequest("Big than 2m");
+                using var dataStream = new MemoryStream();
+                await input.Post.CopyToAsync(dataStream);
+
+                post.Decription = input.Decription;
+                post.PostImage=dataStream.ToArray();
+                _unitOfWork.PosterRepository.Update(post); 
+                _unitOfWork.Commit(); 
+                return Ok(input);
+            }
         }
     }
 }
