@@ -24,7 +24,7 @@ namespace DAL.VotingSystem.Entities.UserIdentity
         public Admin Admin { get; set; }
         public Candidate Candidate { get; set; }
         public Voter Voter { get; set; }
-        public int SSN { get; set; }
+        public string SSN { get; set; }
         public Gender Gender { get; set; }
 
         [StringLength(20), MinLength(3)]

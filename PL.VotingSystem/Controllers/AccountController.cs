@@ -14,12 +14,29 @@ namespace PL.VotingSystem.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITokenService _token;
         private readonly SignInManager<ApplicationUser> _signInManager;
-       
-        public AccountController(UserManager<ApplicationUser> userManager,ITokenService token,SignInManager<ApplicationUser> signInManager)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IFlaskConsumer _flaskConsumer;
+
+        public AccountController(UserManager<ApplicationUser> userManager,ITokenService token,SignInManager<ApplicationUser> signInManager,IUnitOfWork unitOfWork,IFlaskConsumer flaskConsumer)
         {
             _userManager = userManager;
             _token = token;
             _signInManager = signInManager;
+            _unitOfWork = unitOfWork;
+            _flaskConsumer = flaskConsumer;
+        }
+
+
+        [HttpPost]
+        public async Task<ActionResult<ExtractedData>> GetDataModel([FromForm]DataModelDto dataModelDto)
+        {
+            var extractedData = await _flaskConsumer.DataExtractionAsync(dataModelDto.ImageCard);
+            if(extractedData == null) 
+                return NotFound();
+            var voter =await _unitOfWork.voterRepository.GetByNidAsync(extractedData.NID);
+            if (voter != null)
+                return BadRequest("SSn Already Found");
+            return extractedData;
         }
         
         [HttpPost]
@@ -47,8 +64,7 @@ namespace PL.VotingSystem.Controllers
                 LastName = dto.LastName,
                 DateOfBirth = dto.DateOfBirth,
                 SSN = dto.SSN,
-                City = dto.City,
-                Street = dto.Street,
+                City = dto.Address,
                 Voter = new Voter
                 {
                     ImageCard=dataStream.ToArray(),
@@ -176,7 +192,7 @@ namespace PL.VotingSystem.Controllers
                 user.FirstName = dto.FirstName;
                 user.LastName = dto.LastName;
                 user.Email = dto.Email;
-                user.City = dto.City;
+                user.City = dto.Address;
                 user.SSN = dto.SSN;
                 user.DateOfBirth = dto.DateOfBirth;
                 user.UserName = dto.UserName;

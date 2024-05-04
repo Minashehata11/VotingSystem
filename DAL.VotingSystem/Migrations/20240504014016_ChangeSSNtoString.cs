@@ -4,7 +4,7 @@
 
 namespace DAL.VotingSystem.Migrations
 {
-    public partial class ChangeNidFromIntToString : Migration
+    public partial class ChangeSSNtoString : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

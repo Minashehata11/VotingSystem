@@ -25,7 +25,7 @@ namespace BLL.VotingSystem.Dtos
         
         public string OldPassword { get; set; }
         public string Name { get; set; }
-        public int SSN { get; set; }
+        public string SSN { get; set; }
         public Gender Gender { get; set; }
         public string City { get; set; }
         public DateTime DateOfBirth { get; set; }

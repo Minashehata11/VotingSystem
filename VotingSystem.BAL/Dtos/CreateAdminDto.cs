@@ -26,7 +26,7 @@ namespace BLL.VotingSystem.Dtos
         [Compare("Password", ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; }
         public string Name { get; set; }
-        public int SSN { get; set; }
+        public string SSN { get; set; }
         public Gender Gender { get; set; }
         public string City { get; set; }
         public DateTime DateOfBirth { get; set; }

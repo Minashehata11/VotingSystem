@@ -11,7 +11,7 @@ namespace BLL.VotingSystem.Dtos
         public string VoterId { get; set; }
         public string Name { get; set; }
         public string CategoryName { get; set; }
-        public int SSN { get; set; }
+        public string SSN { get; set; }
 
     }
 }

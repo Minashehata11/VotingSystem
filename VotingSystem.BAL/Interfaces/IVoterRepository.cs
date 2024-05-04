@@ -13,5 +13,6 @@ namespace BLL.VotingSystem.Interfaces
         public Task<List<Voter>> SearchUserByNameAsync(string? name);
         public Task<Voter> GetByIdWithIncludeAsync(string id);
 
+        public Task<Voter> GetByNidAsync(string SSN);
     }
 }

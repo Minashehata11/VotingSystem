@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.VotingSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240503234917_ChangeNidFromIntToString")]
-    partial class ChangeNidFromIntToString
+    [Migration("20240504014016_ChangeSSNtoString")]
+    partial class ChangeSSNtoString
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

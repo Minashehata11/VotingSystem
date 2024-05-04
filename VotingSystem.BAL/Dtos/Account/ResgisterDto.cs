@@ -15,7 +15,7 @@ namespace BLL.VotingSystem.Dtos.Account
 
         public string UserName { get; set; }
 
-        public int SSN { get; set; }
+        public string SSN { get; set; }
         public Gender Gender { get; set; }
 
         [StringLength(20), MinLength(3)]
@@ -23,9 +23,7 @@ namespace BLL.VotingSystem.Dtos.Account
 
         public string LastName { get; set; }
 
-        public string City { get; set; }
-        [MaxLength(40)]
-        public string Street { get; set; }
+        public string Address { get; set; }
         public DateTime DateOfBirth { get; set; }
         public IFormFile? ImageCard { get; set; }
 

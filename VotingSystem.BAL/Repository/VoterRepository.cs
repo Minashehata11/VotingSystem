@@ -26,6 +26,9 @@ namespace BLL.VotingSystem.Repository
         public async Task<Voter> GetByIdWithIncludeAsync(string id)
         => await _context.Voters.Include(v => v.User).Include(v => v.Category).SingleOrDefaultAsync(v => v.VoterId == id);
 
+        public Task<Voter> GetByNidAsync(string SSN)
+       => _context.Voters.Include(v => v.User).Where(v => v.User.SSN == SSN).SingleOrDefaultAsync();
+
         public async  Task<List<Voter>> SearchUserByNameAsync(string? name)
         => await _context.Voters.Include(v=>v.User).Where(x => x.User.UserName.Trim().ToLower().Contains(name.Trim().ToLower())).ToListAsync();
     }

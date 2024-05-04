@@ -14,6 +14,7 @@ namespace PL.VotingSystem.Extentions
             services.AddAutoMapper(map => map.AddProfile(new MapperProfile()));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IFlaskConsumer, FlaskConsumer>();
 
 
 
