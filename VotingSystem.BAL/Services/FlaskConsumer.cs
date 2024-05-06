@@ -28,7 +28,9 @@ namespace BLL.VotingSystem.Services
                 response.EnsureSuccessStatusCode();
 
                 dynamic jsonResponse = JsonSerializer.Deserialize<dynamic>(await response.Content.ReadAsStringAsync())!;
+                
                 return jsonResponse;
+              
             }
             catch (HttpRequestException ex)
             {

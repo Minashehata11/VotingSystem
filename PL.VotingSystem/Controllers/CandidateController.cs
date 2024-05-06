@@ -1,5 +1,4 @@
-﻿using BLL.VotingSystem.Dtos;
-using DAL.VotingSystem.Context;
+﻿using DAL.VotingSystem.Context;
 using System.Security.Claims;
 
 namespace PL.VotingSystem.Controllers

@@ -1,4 +1,6 @@
-﻿using System.Security.Claims;
+﻿using BLL.VotingSystem.Services;
+using System.Security.Claims;
+using System.Xml.Linq;
 
 namespace PL.VotingSystem.Controllers
 {
@@ -8,11 +10,13 @@ namespace PL.VotingSystem.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IFilerFunction _filerFunction;
 
-        public VoterController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+        public VoterController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager,IFilerFunction filerFunction)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _filerFunction = filerFunction;
         }
         [HttpGet("ManageElection")]
         public async Task<ActionResult<List<ViewMangeElectionDto>>> ManageElection()
@@ -34,7 +38,7 @@ namespace PL.VotingSystem.Controllers
             if (user == null) return BadRequest("Not Found User");
             Voter voter = _unitOfWork.voterRepository.GetById(user.Id);
             if (voter == null) return BadRequest("Not Authorize");
-            if (voter.CategoryId == id)
+            if (_filerFunction.StringInXml("myfilterL.xml", user.SSN))
             {
                 //Check Time Of Voting Ended Or NOt Before Show CategoryOfVoting
                 var category = await _unitOfWork.CategoryRepository.GetById(id);

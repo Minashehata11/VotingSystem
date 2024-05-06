@@ -1,6 +1,7 @@
 ﻿using BLL.VotingSystem.Dtos.Account;
 using BLL.VotingSystem.Services;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace PL.VotingSystem.Controllers
 {
@@ -8,8 +9,8 @@ namespace PL.VotingSystem.Controllers
     public class AccountController : BaseController
     {
         #region ImageSettingAllowed
-           private List<string> _allowedExtensions = new List<string>() {".png",".jpg" };
-           private long _maxAllowedPosterSize = 1048576*2;
+        private List<string> _allowedExtensions = new List<string>() { ".png", ".jpg" };
+        private long _maxAllowedPosterSize = 1048576 * 2;
         #endregion
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITokenService _token;
@@ -17,7 +18,7 @@ namespace PL.VotingSystem.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IFlaskConsumer _flaskConsumer;
 
-        public AccountController(UserManager<ApplicationUser> userManager,ITokenService token,SignInManager<ApplicationUser> signInManager,IUnitOfWork unitOfWork,IFlaskConsumer flaskConsumer)
+        public AccountController(UserManager<ApplicationUser> userManager, ITokenService token, SignInManager<ApplicationUser> signInManager, IUnitOfWork unitOfWork, IFlaskConsumer flaskConsumer)
         {
             _userManager = userManager;
             _token = token;
@@ -28,21 +29,21 @@ namespace PL.VotingSystem.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ExtractedData>> GetDataModel([FromForm]DataModelDto dataModelDto)
+        public async Task<ActionResult<ExtractedData>> GetDataModel([FromForm] DataModelDto dataModelDto)
         {
             var extractedData = await _flaskConsumer.DataExtractionAsync(dataModelDto.ImageCard);
-            if(extractedData == null) 
+            if (extractedData == null)
                 return NotFound();
-            var voter =await _unitOfWork.voterRepository.GetByNidAsync(extractedData.NID);
+            var voter = await _unitOfWork.voterRepository.GetByNidAsync(extractedData.NID);
             if (voter != null)
                 return BadRequest("SSn Already Found");
             return extractedData;
         }
-        
+
         [HttpPost]
-        public async Task<ActionResult<UserDto>> Register([FromForm]RegisterDto dto)
+        public async Task<ActionResult<UserDto>> Register([FromForm] RegisterDto dto)
         {
-           
+
             if (dto == null)
                 return BadRequest("No User created");
             if (!_allowedExtensions.Contains(Path.GetExtension(dto.ImageCard.FileName).ToLower()))
@@ -51,11 +52,11 @@ namespace PL.VotingSystem.Controllers
                 return BadRequest("Max Allowed is 2M");
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user != null)
-                return  BadRequest($"Registered {dto.Email} Already Token");
+                return BadRequest($"Registered {dto.Email} Already Token");
 
-              using var dataStream = new MemoryStream();
-              await dto.ImageCard.CopyToAsync(dataStream);
-              
+            using var dataStream = new MemoryStream();
+            await dto.ImageCard.CopyToAsync(dataStream);
+
             var appuser = new ApplicationUser
             {
                 Email = dto.Email,
@@ -67,7 +68,7 @@ namespace PL.VotingSystem.Controllers
                 City = dto.Address,
                 Voter = new Voter
                 {
-                    ImageCard=dataStream.ToArray(),
+                    ImageCard = dataStream.ToArray(),
                 }
             };
             var result = await _userManager.CreateAsync(appuser, dto.Password);
@@ -76,16 +77,16 @@ namespace PL.VotingSystem.Controllers
             await _userManager.AddToRoleAsync(appuser, "Voter");
             return new UserDto
             {
-                Id=appuser.Id,
+                Id = appuser.Id,
                 Email = dto.Email,
                 DisplayName = dto.UserName,
                 Token = await _token.GenerateToken(appuser)
             };
-            
+
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserDto>> Login([FromForm]LoginDto dto)
+        public async Task<ActionResult<UserDto>> Login([FromForm] LoginDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
@@ -98,32 +99,45 @@ namespace PL.VotingSystem.Controllers
             {
                 return BadRequest("Account Blocked for 1 min");
             }
-
-            var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, lockoutOnFailure: true);
-            if (!result.Succeeded)
+            JsonElement json = await _flaskConsumer.FaceRecognitionAsync(dto.ImageCard, dto.FaceImage);
+            string message;
+                // Try accessing the "result" property
+                if (json.TryGetProperty("result", out JsonElement resultProperty))
+                         message = resultProperty.GetString();
+                else 
+                    message = string.Empty;
+            
+            
+            if (message == "Face verification successful.")
             {
-                await _userManager.AccessFailedAsync(user);
+                var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, lockoutOnFailure: true);
+                if (!result.Succeeded)
+                {
+                    await _userManager.AccessFailedAsync(user);
 
-                if (await _userManager.IsLockedOutAsync(user))
-                {
-                    ModelState.AddModelError(string.Empty, "Your account is locked out for 1 minute due to multiple failed login attempts. Please try again later.");
-                    return BadRequest("Locked for 1 min");
+                    if (await _userManager.IsLockedOutAsync(user))
+                    {
+                        return BadRequest("Locked for 1 min");
+                    }
+                    else
+                    {
+                        return BadRequest("Incorrect Password");
+                    }
+
                 }
-                else
+                await _userManager.ResetAccessFailedCountAsync(user);
+                return new UserDto
                 {
-                    return BadRequest("Incorrect Password");
-                }
+                    Id = user.Id,
+                    DisplayName = dto.Email.Split('@')[0],
+                    Email = dto.Email,
+                    Token = await _token.GenerateToken(user)
+                };
+
             }
+            else
+                return BadRequest("Face verification Failed ");
 
-            // Successful login
-            await _userManager.ResetAccessFailedCountAsync(user);
-            return new UserDto
-            {
-                Id=user.Id,
-                DisplayName = dto.Email.Split('@')[0],
-                Email = dto.Email,
-                Token = await _token.GenerateToken(user)
-            };
         }
 
         [HttpGet]
@@ -142,8 +156,8 @@ namespace PL.VotingSystem.Controllers
             {
                 return NotFound("User not found.");
             }
-            if(user.Image != null) 
-            base64Image = Convert.ToBase64String(user.Image);
+            if (user.Image != null)
+                base64Image = Convert.ToBase64String(user.Image);
 
             UserViewDto userView = new UserViewDto
             {
@@ -153,7 +167,7 @@ namespace PL.VotingSystem.Controllers
                 DateOfBirth = user.DateOfBirth.ToString("yyyy-mm-dd"),
                 Email = user.Email,
                 Gender = user.Gender.ToString(),
-                ImageProile=base64Image
+                ImageProile = base64Image
             };
 
             return Ok(userView);
@@ -165,7 +179,7 @@ namespace PL.VotingSystem.Controllers
         {
             await _signInManager.SignOutAsync();
 
-            
+
             return Ok("Logout successful.");
         }
 
@@ -206,12 +220,12 @@ namespace PL.VotingSystem.Controllers
                         return BadRequest("ONly JPG and Png Allowed");
                     if (dto.ImageCard.Length > _maxAllowedPosterSize)
                         return BadRequest("Max Allowed is 2M");
-                    
+
 
                     using var dataStream = new MemoryStream();
                     await dto.ImageCard.CopyToAsync(dataStream);
 
-                    user.Image =dataStream.ToArray();
+                    user.Image = dataStream.ToArray();
                 }
 
                 var result = await _userManager.UpdateAsync(user);

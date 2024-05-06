@@ -1,9 +1,6 @@
 ﻿using BLL.VotingSystem.Repository;
 using BLL.VotingSystem.Services;
-using DAL.VotingSystem.Entities.UserIdentity;
 using LearnApi.HelperServices;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace PL.VotingSystem.Extentions
 {
@@ -15,8 +12,7 @@ namespace PL.VotingSystem.Extentions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IFlaskConsumer, FlaskConsumer>();
-
-
+            services.AddScoped<IFilerFunction, FilterFunction>();
 
             return services;
         }

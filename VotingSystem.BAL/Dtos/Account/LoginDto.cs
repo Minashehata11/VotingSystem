@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace BLL.VotingSystem.Dtos.Account
 {
@@ -10,6 +11,8 @@ namespace BLL.VotingSystem.Dtos.Account
         [DataType(DataType.Password)]
         [Required]
         public string Password { get; set; }
+        public IFormFile ImageCard { get; set; }
 
+        public IFormFile FaceImage { get; set; }
     }
 }
