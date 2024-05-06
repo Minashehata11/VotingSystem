@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Xml.Linq;
 
 namespace PL.VotingSystem.Controllers
 {
@@ -34,7 +35,9 @@ namespace PL.VotingSystem.Controllers
             if (user == null) return BadRequest("Not Found User");
             Voter voter = _unitOfWork.voterRepository.GetById(user.Id);
             if (voter == null) return BadRequest("Not Authorize");
-            if (voter.CategoryId == id)
+            
+            // true if the user's ssn in the prebuild xml file 
+            if (StringInXml("myfilterL.xml", user.SSN))
             {
                 //Check Time Of Voting Ended Or NOt Before Show CategoryOfVoting
                 var category = await _unitOfWork.CategoryRepository.GetById(id);
@@ -121,5 +124,33 @@ namespace PL.VotingSystem.Controllers
             }
             return BadRequest("Not Posts Found");
         }
+
+        // searching function return boolean , true if national number exists in xml file 
+        public static bool StringInXml(string xmlFilePath, string searchString)
+        {
+
+            if (string.IsNullOrEmpty(xmlFilePath) || string.IsNullOrEmpty(searchString))
+            {
+
+                return false; // Handle empty inputs 
+            }
+
+            try
+            {
+                // Use XDocument for clean and efficient XML handling
+                var doc = XDocument.Load(xmlFilePath);
+                return doc.ToString().Contains(searchString); // return true if find or false if not or through exceptions
+            }
+            catch (Exception ex)
+            {
+                // Handle potential exceptions (e.g., file not found, invalid XML)
+                Console.WriteLine($"Error: {ex.Message}");
+
+                return false;
+            }
+
+        }
+
+
     }
 }
