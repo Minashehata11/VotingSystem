@@ -1,6 +1,7 @@
 ﻿using BLL.VotingSystem.Services;
 using System.Security.Claims;
 using System.Xml.Linq;
+using static System.Collections.Specialized.BitVector32;
 
 namespace PL.VotingSystem.Controllers
 {
@@ -38,20 +39,34 @@ namespace PL.VotingSystem.Controllers
             if (user == null) return BadRequest("Not Found User");
             Voter voter = _unitOfWork.voterRepository.GetById(user.Id);
             if (voter == null) return BadRequest("Not Authorize");
-            if (_filerFunction.StringInXml("myfilterL.xml", user.SSN))
+              var category = await _unitOfWork.CategoryRepository.GetById(id);
+            if(category.Name== "Presidential election")
             {
-                //Check Time Of Voting Ended Or NOt Before Show CategoryOfVoting
-                var category = await _unitOfWork.CategoryRepository.GetById(id);
                 if (category.DateOfEndVoting < DateTime.Now || category.DateOfEndVoting == DateTime.Now)
                     return BadRequest($"Voting was Ended in {category.DateOfEndVoting}");
                 var categoryDto = await _unitOfWork.CategoryRepository.GetByIdWithIncludeAsync(id);
                 if (categoryDto == null) return NotFound("Not Found Category");
-                
-                return Ok(categoryDto);
 
+                return Ok(categoryDto);
             }
             else
-                return Ok("You don't have permissions to Vote in this Voting");
+            {
+                if (_filerFunction.StringInXml("myfilterL.xml", user.SSN))
+                {
+                    //Check Time Of Voting Ended Or NOt Before Show CategoryOfVoting
+                    if (category.DateOfEndVoting < DateTime.Now || category.DateOfEndVoting == DateTime.Now)
+                        return BadRequest($"Voting was Ended in {category.DateOfEndVoting}");
+                    var categoryDto = await _unitOfWork.CategoryRepository.GetByIdWithIncludeAsync(id);
+                    if (categoryDto == null) return NotFound("Not Found Category");
+
+                    return Ok(categoryDto);
+
+                }
+                else
+                    return Ok("You don't have permissions to Vote in this Voting");
+            }
+
+            
         }
 
         [HttpPost("{categoryId}")]
